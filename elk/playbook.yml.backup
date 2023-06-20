@@ -1,0 +1,28 @@
+- name: Install elastic search
+  hosts: elk
+  vars:
+    cluster_name: 'my_cluster'
+    node_name: 'my_node'
+    elastic_network_host: localhost
+    elastic_http_port: 9200
+    kibana_server_port: 5601 
+    kibana_server_host: 0.0.0.0  
+  become: yes
+
+  tasks:
+    - name: Include roles
+      include_role:
+        name: elasticsearch
+
+    - name: Include roles
+      include_role:
+        name: kibana
+
+    - name: Include roles
+      include_role:
+        name: logstash
+
+    - name: Include roles
+      include_role:
+        name: filebeat
+

@@ -1,0 +1,28 @@
+- name: Install Filebeat
+  apt:
+    name: filebeat
+    state: present
+
+- name: Enable Filebeat service
+  systemd:
+    name: filebeat
+    enabled: yes
+- name: Replace Filebeat configuration
+  lineinfile:
+        path: /etc/filebeat/filebeat.yml
+        regex: "{{ item.regex }}"
+        line: "{{ item.line }}"
+  loop:
+        - { regex: '^\s*- type:\s*filestream$', line: '- type: log' }
+        - { regex: '^\s*id:\s*my-filestream-id$', line: '  id: filebeat-nginx-logs' }
+        - { regex: '^\s*enabled:\s*false$', line: '  enabled: true' }
+  
+- name: Restart Filebeat
+  systemd:
+        name: filebeat
+        state: restarted
+
+
+
+        
+

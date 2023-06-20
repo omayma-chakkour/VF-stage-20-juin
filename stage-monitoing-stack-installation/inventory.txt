@@ -1,0 +1,6 @@
+[monitorserver]
+10.0.2.5  ansible_user=grafanaadmin ansible_password=Password1234!
+[nodeservers]
+10.0.2.4  ansible_user=elkadmin ansible_password=Password1234!
+10.0.1.4  ansible_user=userAdmin ansible_password=Password1234!
+

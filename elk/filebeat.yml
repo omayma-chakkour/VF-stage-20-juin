@@ -1,0 +1,22 @@
+---
+- name: Update Filebeat Configuration
+  hosts: elk
+  become: yes
+
+  tasks:
+    - name: Replace Filebeat configuration
+      lineinfile:
+        path: /etc/filebeat/filebeat.yml
+        regex: "{{ item.regex }}"
+        line: "{{ item.line }}"
+      loop:
+        - { regex: '^\s*- type:\s*filestream$', line: '- type: log' }
+        - { regex: '^\s*id:\s*my-filestream-id$', line: '  id: filebeat-nginx-logs' }
+        - { regex: '^\s*enabled:\s*false$', line: '  enabled: true' }
+        - { regex: '^\s*- \/var\/log\/\*\.log$', line: '  - /var/log/nginx/access.log\n    - /var/log/nginx/error.log' }
+
+    - name: Restart Filebeat
+      systemd:
+        name: filebeat
+        state: restarted
+

@@ -1,0 +1,28 @@
+input {
+  beats {
+    port => 5044
+  }
+}
+
+
+filter {
+  grok {
+    match => { "message" => "%{IPORHOST:[nginx][access][remote_ip]} %{DATA:[nginx][access][user_name]} %{DATA:[nginx][access][timestamp]} %{QS:[nginx][access][request]} %{NUMBER:[nginx][access][status_code]} %{NUMBER:[nginx][access][body_sent][bytes]} %{QS:[nginx][access][referrer]} %{QS:[nginx][access][user_agent]}" }
+    remove_field => "message"
+  }
+
+
+  date {
+    match => [ "[nginx][access][timestamp]", "dd/MMM/yyyy:HH:mm:ss Z" ]
+    remove_field => "[nginx][access][timestamp]"
+  }
+}
+
+
+output {
+  elasticsearch {
+    hosts => ["localhost:9200"]
+    index => "nginx-access-logs-%{+YYYY.MM.dd}"
+  }
+}
+

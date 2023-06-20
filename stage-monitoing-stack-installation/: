@@ -1,0 +1,37 @@
+---
+# tasks file for roles/nginx
+- name: Install NGINX
+  apt:
+    name: nginx
+    state: present
+
+- name: Delete default NGINX configuration
+  file:
+    path: /etc/nginx/sites-available/default
+    state: absent
+
+- name: Delete default NGINX symbolic link
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Create NGINX configuration file
+  template:
+    src: nginx-grafana.conf.j2
+    dest: /etc/nginx/sites-available/nginx
+  notify:
+    - Restart NGINX
+
+- name: Enable NGINX configuration
+  file:
+    src: /etc/nginx/sites-available/nginx
+    dest: /etc/nginx/sites-enabled/nginx
+    state: link
+  notify:
+    - Restart NGINX
+
+- name: Restart NGINX
+  systemd:
+    name: nginx
+    state: restarted
+
